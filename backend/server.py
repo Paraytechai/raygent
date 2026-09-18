@@ -306,14 +306,69 @@ async def generate_comfy_avatar(prompt: str) -> Optional[dict]:
         return None
     return None
 
+async def generate_imagen_avatar(prompt: str) -> Optional[dict]:
+    """Generate high quality avatar using Google AI Studio / Vertex Imagen 3 API."""
+    import time
+    clean_prompt = prompt.strip()
+    if not clean_prompt:
+        clean_prompt = "cyberpunk avatar with glowing neon eyes, portrait"
+    try:
+        client = core._get_client()
+        result = await asyncio.to_thread(
+            client.models.generate_images,
+            model="imagen-3.0-generate-002",
+            prompt=f"Centered close-up headshot portrait of {clean_prompt}, photorealistic, dramatic lighting, 8k, looking at camera",
+            config={
+                "number_of_images": 1,
+                "aspect_ratio": "1:1",
+                "output_mime_type": "image/png"
+            }
+        )
+        if result and result.generated_images:
+            img_bytes = result.generated_images[0].image.image_bytes
+            ts = int(time.time())
+            slug = re.sub(r'[^a-zA-Z0-9_]', '_', clean_prompt[:25]).strip('_')
+            saved_filename = f"gen_imagen_{slug}_{ts}.png"
+            saved_dest = AVATARS_DIR / saved_filename
+            with open(saved_dest, "wb") as f:
+                f.write(img_bytes)
+            return {
+                "status": "success",
+                "name": clean_prompt,
+                "filename": saved_filename,
+                "url": f"/static/avatars/{saved_filename}",
+                "type": "image",
+                "engine": "Google Imagen 3 (AI Studio / Vertex)"
+            }
+    except Exception as e:
+        print(f"[Google Imagen 3 Error]: {e}")
+        return None
+    return None
+
 @app.post("/api/generate_avatar")
 async def api_generate_avatar(data: dict):
     prompt = data.get("prompt", "").strip()
+    preferred_engine = data.get("engine", "auto") # auto, comfy, google
     if not prompt:
         return JSONResponse({"error": "Prompt required"}, status_code=400)
-    result = await generate_comfy_avatar(prompt)
+
+    result = None
+    # 1. Try ComfyUI (if requested or auto)
+    if preferred_engine in ("comfy", "auto"):
+        result = await generate_comfy_avatar(prompt)
+        if result:
+            result["engine"] = "Local ComfyUI (SDXL Turbo • RTX 5060 Ti)"
+
+    # 2. Fallback to Google Imagen 3 Cloud API (AI Studio / Vertex AI)
+    if not result and preferred_engine in ("google", "auto"):
+        result = await generate_imagen_avatar(prompt)
+
     if not result:
-        return JSONResponse({"status": "error", "message": "Failed to generate avatar from ComfyUI"}, status_code=500)
+        return JSONResponse({
+            "status": "error",
+            "message": "Avatar generation failed on both Local ComfyUI and Google Imagen 3 Cloud API."
+        }, status_code=500)
+
     await broadcast_websocket({
         "type": "avatar_change",
         "url": result["url"],

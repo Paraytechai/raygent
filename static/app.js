@@ -599,12 +599,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const genStatusText = document.getElementById('gen-status-text');
   const launchWebcamBtn = document.getElementById('launch-webcam-btn');
 
+  const avatarEngineSelect = document.getElementById('avatar-gen-engine');
+
   async function generateAvatar(prompt) {
     if (!prompt || !prompt.trim()) return;
     prompt = prompt.trim();
+    const selectedEngine = avatarEngineSelect ? avatarEngineSelect.value : 'auto';
+    const engineLabel = selectedEngine === 'google' ? 'Google Imagen 3 (Cloud)' : (selectedEngine === 'comfy' ? 'ComfyUI SDXL (RTX 5060 Ti)' : 'Auto Engine (GPU ➔ Cloud)');
+
     if (avatarGenStatus) {
       avatarGenStatus.style.display = 'flex';
-      genStatusText.textContent = `Generating "${prompt}" on RTX 5060 Ti...`;
+      genStatusText.textContent = `Generating "${prompt}" via ${engineLabel}...`;
     }
     if (avatarGenBtn) avatarGenBtn.disabled = true;
 
@@ -612,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/generate_avatar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, engine: selectedEngine })
       });
       const data = await res.json();
       if (data.status === 'success' && data.url) {
@@ -620,8 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAvatars();
         if (avatarPromptInput) avatarPromptInput.value = '';
         if (avatarDrawer) avatarDrawer.classList.remove('open');
+        appendMessage('raygent', `✨ New avatar generated via **${data.engine || 'AI Studio / Comfy'}**! Check me out.`);
       } else {
-        alert(data.message || 'Generation failed. Check that ComfyUI is running.');
+        alert(data.message || 'Generation failed. Check that ComfyUI is running or Google API Key is set.');
       }
     } catch (err) {
       alert('Error generating avatar: ' + err.message);

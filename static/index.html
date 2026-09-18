@@ -165,9 +165,19 @@
       <div class="drawer-body">
         <!-- AI Prompt Generator Section -->
         <div class="avatar-generator-box">
-          <div class="gen-box-header">
-            <h4>🎨 Change Avatar to Whatever (1s Generation)</h4>
-            <span class="section-hint">Type any prompt or pick a preset. Generates and sets avatar live instantly!</span>
+          <div class="gen-box-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <h4>🎨 Change Avatar to Whatever</h4>
+              <span class="section-hint">Type any prompt or pick a preset. Generates and switches avatar live!</span>
+            </div>
+            <!-- Dual Engine Selector -->
+            <div style="display:flex; gap:6px;">
+              <select id="avatar-gen-engine" style="background:#0a0f1d; border:1px solid var(--accent-cyan); color:#00f0ff; border-radius:6px; padding:4px 8px; font-size:11px; font-family:'JetBrains Mono',monospace;">
+                <option value="auto">⚡ Auto (Local GPU ➔ Cloud)</option>
+                <option value="google">✨ Google Imagen 3 (Cloud)</option>
+                <option value="comfy">🖥️ ComfyUI SDXL (RTX 5060 Ti)</option>
+              </select>
+            </div>
           </div>
           <div class="gen-input-row">
             <input type="text" id="avatar-prompt-input" placeholder="e.g. Cyberpunk ninja with neon katana, anime mech pilot..." />
@@ -182,19 +192,21 @@
             <button class="gen-chip" data-prompt="badass golden retriever wearing black sunglasses and leather jacket">🐶 Cool Doge</button>
           </div>
           <div id="avatar-gen-status" class="avatar-gen-status" style="display:none;">
-            <span class="gen-spinner"></span> <span id="gen-status-text">Generating avatar on RTX 5060 Ti...</span>
+            <span class="gen-spinner"></span> <span id="gen-status-text">Generating avatar...</span>
           </div>
         </div>
 
-        <!-- Option 1: Live Webcam Driving Action Banner -->
+        <!-- External AI Studio & ComfyUI Action Hub -->
         <div class="webcam-live-box">
           <div class="webcam-box-info">
-            <div class="webcam-box-title">📹 Drive Active Avatar with Live Webcam (LivePortrait)</div>
-            <div class="section-hint">Your real-life webcam face & mouth will drive whichever avatar is active in real time (30-60 FPS).</div>
+            <div class="webcam-box-title">⚡ AI Studio & ComfyUI Backend Hub</div>
+            <div class="section-hint">Open Google AI Studio for prompt engineering & model tuning, or launch ComfyUI on your local GPU.</div>
           </div>
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <button id="launch-webcam-btn" class="secondary-btn" style="border-color:var(--accent-cyan); color:var(--accent-cyan); flex:1;">🚀 Launch LivePortrait Webcam</button>
-            <a href="http://127.0.0.1:8189" target="_blank" class="secondary-btn" style="text-decoration:none; text-align:center; padding:8px 12px;">🎛️ ComfyUI Studio</a>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <a href="https://aistudio.google.com/" target="_blank" class="secondary-btn" style="text-decoration:none; text-align:center; padding:8px 12px; border-color:#00f0ff; color:#00f0ff; flex:1;">✨ Google AI Studio</a>
+            <a href="https://console.cloud.google.com/gen-app-builder/engines?project=gen-lang-client-0399378755" target="_blank" class="secondary-btn" style="text-decoration:none; text-align:center; padding:8px 12px; border-color:#ffb703; color:#ffb703; flex:1;">🤖 Agent Builder</a>
+            <a href="http://127.0.0.1:8189" target="_blank" class="secondary-btn" style="text-decoration:none; text-align:center; padding:8px 12px; border-color:#ff007f; color:#fff; flex:1;">🎛️ ComfyUI Studio</a>
+            <button id="launch-webcam-btn" class="secondary-btn" style="border-color:var(--accent-cyan); color:var(--accent-cyan); flex:1;">🚀 Launch LivePortrait</button>
           </div>
         </div>
 
