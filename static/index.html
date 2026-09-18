@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raygent - Talking Avatar Assistant</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+  <!-- HUD Header Bar -->
+  <header class="hud-header" id="drag-handle">
+    <div class="hud-brand">
+      <span class="pulse-dot"></span>
+      <span class="brand-title">RAYGENT <span class="version-tag" id="intel-secret-trigger" title="Raygent Pro" style="cursor:pointer;">PRO</span></span>
+    </div>
+    <div class="hud-actions">
+      <button id="avatar-drawer-toggle" class="mode-btn" title="Upload Media or Switch Avatar">
+        📁 Upload / Avatar
+      </button>
+      <button id="voice-settings-toggle" class="mode-btn voice" title="OmniVoice Voice Cloning & Neural TTS">
+        🔊 Voice Studio
+      </button>
+      <button id="mini-mode-toggle" class="mode-btn mini" title="Toggle Mini Widget Mode (Alt+M)">
+        🗖 Mini Mode
+      </button>
+      <button id="page-inspector-toggle" class="mode-btn inspect" title="Open Playwright Page Inspector">
+        🌐 Inspector
+      </button>
+      <button id="hud-minimize-btn" class="icon-btn" title="Minimize / Float Mode">🗕</button>
+      <button id="hud-close-btn" class="icon-btn" title="Hide to Tray">✕</button>
+    </div>
+  </header>
+
+  <main class="hud-container">
+    <!-- Mini Mode Drag / Header Bar -->
+    <div class="mini-bar" id="mini-bar">
+      <div class="mini-brand">
+        <span class="pulse-dot"></span>
+        <span class="mini-title">RAYGENT</span>
+      </div>
+      <div class="mini-actions">
+        <button id="mini-expand-btn" class="icon-btn mini-btn" title="Expand to Full Studio (Alt+M)">⛶ Full</button>
+        <button id="mini-close-btn" class="icon-btn mini-btn" title="Close">✕</button>
+      </div>
+    </div>
+    <!-- Top Avatar & Reactive Stage -->
+    <section class="avatar-stage">
+      <div class="avatar-halo" id="avatar-halo">
+        <canvas id="visualizer-canvas" width="340" height="340"></canvas>
+
+        <div class="avatar-frame" id="avatar-frame">
+          <video id="avatar-video" playsinline muted loop preload="auto" class="avatar-media">
+            <source src="/static/avatars/ray_video.mp4" type="video/mp4">
+          </video>
+          <canvas id="avatar-portrait-canvas" width="300" height="300" class="avatar-media active"></canvas>
+        </div>
+
+        <div class="status-pill" id="agent-status-pill">
+          <span class="status-indicator"></span>
+          <span id="status-label">ONLINE</span>
+        </div>
+      </div>
+
+      <!-- 6 Poses Manual Control Ribbon -->
+      <div class="pose-ribbon">
+        <button class="pose-btn active" data-pose="idle" title="Neutral / Chill">😎 Chill</button>
+        <button class="pose-btn" data-pose="yes" title="Answer Yes / Nod">👍 Yes</button>
+        <button class="pose-btn" data-pose="no" title="Answer No / Skeptical">✋ No</button>
+        <button class="pose-btn" data-pose="whats_it_to_you" title="What's it to you?">👉 What's it to you?</button>
+        <button class="pose-btn" data-pose="let_me_check" title="Let me check / Drink">📱 Let me check</button>
+        <button class="pose-btn" data-pose="without_me" title="Without me / Toast">🥃 Toast</button>
+      </div>
+
+      <!-- Quick Action Chips -->
+      <div class="quick-chips">
+        <button class="chip" data-query="Give me a cocky toast and tell me what you'd do without me.">🥃 Toast Me</button>
+        <button class="chip" data-query="Argue with me using nothing but famous movie quotes!">⚔️ Movie Fight</button>
+        <button class="chip" data-query="Hit me with a classic movie one-liner.">🎬 Movie Line</button>
+        <button class="chip" data-query="What's it to you if I skip my math homework tonight?">👉 What's it to you?</button>
+        <button class="chip" data-query="Explain Module 1 Right Triangles and ALEKS diagnostic.">📐 Math 121</button>
+        <button class="chip" data-query="Write a Python script to check my system and print a roast.">🐍 Python Code</button>
+      </div>
+    </section>
+
+    <!-- Page Inspector Widget Drawer -->
+    <section class="inspector-drawer" id="inspector-drawer" style="display:none;">
+      <div class="inspector-header">
+        <span class="inspector-title">🌐 Playwright Page Inspector</span>
+        <button id="inspector-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="inspector-controls">
+        <input type="text" id="inspector-url" placeholder="Enter URL (e.g. learn.devry.edu, github.com)..." value="https://devryu.instructure.com/courses/141342/modules" />
+        <button id="inspect-btn" class="inspect-submit-btn">Inspect & Analyze</button>
+      </div>
+      <div class="inspector-preview-zone" id="inspector-preview-zone" style="display:none;">
+        <img id="inspector-screenshot" src="" alt="Page Screenshot" />
+        <div class="inspector-status" id="inspector-status">Analyzing DOM...</div>
+      </div>
+    </section>
+
+    <!-- Thinking Trace / Reasoning Accordion -->
+    <section class="thoughts-section" id="thoughts-section" style="display:none;">
+      <div class="thoughts-header" id="thoughts-toggle">
+        <span class="brain-icon">🧠</span>
+        <span class="thoughts-title">Raygent Mind Log</span>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="thoughts-content" id="thoughts-content"></div>
+    </section>
+
+    <!-- Conversation Feed -->
+    <section class="chat-viewport" id="chat-viewport">
+      <div class="message-bubble raygent welcome">
+        <div class="bubble-header">
+          <span class="sender-name">RAYGENT</span>
+          <span class="timestamp">NOW</span>
+        </div>
+        <div class="bubble-body">
+          What’s up, Ray? Got the Hawaiian shirt pressed, sunglasses on, and a fresh glass of whiskey. My 6 poses are locked and loaded, Playwright page inspector is ready to snoop any web URL, and I can run whatever code you throw at me. What are we getting into?
+        </div>
+      </div>
+    </section>
+
+    <!-- Mini Mode Floating Speech Bubble -->
+    <div class="mini-response-bubble" id="mini-response-bubble" style="display:none;">
+      <div class="mini-bubble-speaker">RAYGENT</div>
+      <div class="mini-bubble-text" id="mini-bubble-text"></div>
+    </div>
+
+    <!-- Controls -->
+    <footer class="hud-controls">
+      <div class="input-wrapper">
+        <input type="file" id="chat-file-input" accept="image/*,video/*,.pdf,.txt,.py,.js,.html,.json" style="display:none;" />
+        <button id="chat-upload-btn" class="icon-btn" title="Upload Media, Photo or File" style="background:transparent; border:none; color:var(--accent-cyan); font-size:1.1rem; width:28px; height:auto; cursor:pointer;">📎</button>
+        <input type="text" id="user-input" placeholder="Ask Raygent, request code, or inspect pages..." autocomplete="off" />
+        <button id="send-btn" class="send-btn" title="Send (Enter)">➤</button>
+      </div>
+
+      <div class="voice-controls">
+        <button id="mic-btn" class="mic-btn" title="Push-to-Talk (Hold Space or Click to Toggle)">
+          <span class="mic-icon">🎙️</span>
+          <span class="mic-label">HOLD TO TALK</span>
+        </button>
+        <div class="hotkey-hint">
+          <span class="badge">HOTKEY</span>
+          <kbd>Win + Shift + R</kbd>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Avatar Selector Drawer -->
+  <div class="drawer-modal" id="avatar-drawer">
+    <div class="drawer-panel" style="max-width: 580px;">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>🎭 Avatar Studio & Stream Generator</h3>
+          <span class="gpu-badge">SDXL Turbo • RTX 5060 Ti</span>
+        </div>
+        <button id="drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body">
+        <!-- AI Prompt Generator Section -->
+        <div class="avatar-generator-box">
+          <div class="gen-box-header">
+            <h4>🎨 Change Avatar to Whatever (1s Generation)</h4>
+            <span class="section-hint">Type any prompt or pick a preset. Generates and sets avatar live instantly!</span>
+          </div>
+          <div class="gen-input-row">
+            <input type="text" id="avatar-prompt-input" placeholder="e.g. Cyberpunk ninja with neon katana, anime mech pilot..." />
+            <button id="avatar-gen-btn" class="gen-submit-btn">✨ Generate Live</button>
+          </div>
+          <div class="gen-preset-chips">
+            <button class="gen-chip" data-prompt="futuristic neon cyberpunk cyborg with glowing blue visor, high tech armor">🤖 Cyberpunk</button>
+            <button class="gen-chip" data-prompt="badass anime mecha pilot with spiky hair and tactical jacket">⚡ Anime Pilot</button>
+            <button class="gen-chip" data-prompt="charismatic 1920s noir detective in fedora trenchcoat smoking cigar">🕵️ Noir Detective</button>
+            <button class="gen-chip" data-prompt="gothic vampire lord with glowing crimson eyes in dark velvet">🧛 Vampire</button>
+            <button class="gen-chip" data-prompt="retro 80s glam rocker with mirror sunglasses and wild hair">🎸 80s Rocker</button>
+            <button class="gen-chip" data-prompt="badass golden retriever wearing black sunglasses and leather jacket">🐶 Cool Doge</button>
+          </div>
+          <div id="avatar-gen-status" class="avatar-gen-status" style="display:none;">
+            <span class="gen-spinner"></span> <span id="gen-status-text">Generating avatar on RTX 5060 Ti...</span>
+          </div>
+        </div>
+
+        <!-- Option 1: Live Webcam Driving Action Banner -->
+        <div class="webcam-live-box">
+          <div class="webcam-box-info">
+            <div class="webcam-box-title">📹 Drive Active Avatar with Live Webcam (LivePortrait)</div>
+            <div class="section-hint">Your real-life webcam face & mouth will drive whichever avatar is active in real time (30-60 FPS).</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button id="launch-webcam-btn" class="secondary-btn" style="border-color:var(--accent-cyan); color:var(--accent-cyan); flex:1;">🚀 Launch LivePortrait Webcam</button>
+            <a href="http://127.0.0.1:8189" target="_blank" class="secondary-btn" style="text-decoration:none; text-align:center; padding:8px 12px;">🎛️ ComfyUI Studio</a>
+          </div>
+        </div>
+
+        <h4 style="margin-top:14px; margin-bottom:6px; color:var(--accent-cyan); font-size:0.95rem; text-transform:uppercase;">Avatar Library & Uploads</h4>
+        <div class="avatar-grid" id="avatar-grid"></div>
+        <div class="upload-zone" id="upload-dropzone">
+          <input type="file" id="avatar-file-input" accept="video/*,image/*" style="display:none;" />
+          <div class="upload-content">
+            <span class="upload-icon">📁</span>
+            <span>Drop video or photo here, or <strong>Browse</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OmniVoice Voice Studio Drawer -->
+  <div class="drawer-modal" id="voice-drawer" style="display:none;">
+    <div class="drawer-panel voice-panel">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>🎙️ OmniVoice Studio</h3>
+          <span class="gpu-badge">RTX 5060 Ti • CUDA</span>
+        </div>
+        <button id="voice-drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body voice-body">
+        <div class="voice-status-card" id="voice-status-card">
+          <div class="voice-status-indicator active"></div>
+          <div class="voice-status-info">
+            <div class="voice-status-title" id="voice-status-mode">OmniVoice Zero-Shot Neural Engine</div>
+            <div class="voice-status-desc" id="voice-status-desc">Active on RTX 5060 Ti.</div>
+          </div>
+        </div>
+
+        <div class="voice-section">
+          <h4>Clone Your Voice (@cyberray68)</h4>
+          <p class="section-hint">Record 5-10 seconds of Ray speaking or upload a clip. OmniVoice will zero-shot clone your pitch, timbre, and Texas swagger.</p>
+          
+          <div class="clone-record-zone">
+            <button id="record-voice-ref-btn" class="clone-record-btn">
+              <span class="rec-dot"></span>
+              <span id="record-voice-ref-label">Record Voice Sample (5s)</span>
+            </button>
+            <div class="rec-progress-bar" id="rec-progress-bar" style="display:none;">
+              <div class="rec-progress-fill" id="rec-progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="upload-voice-zone">
+            <input type="file" id="voice-ref-file-input" accept="audio/*" style="display:none;" />
+            <button id="upload-voice-ref-btn" class="secondary-btn">📁 Upload Voice File (.wav / .mp3)</button>
+          </div>
+        </div>
+
+        <div class="voice-section">
+          <h4>Voice Design & Style</h4>
+          <div class="voice-preset-chips">
+            <button class="voice-chip active" data-instruct="male, american accent, low pitch, middle-aged">🥃 Ray Texas Swagger (Default)</button>
+            <button class="voice-chip" data-instruct="male, american accent, very low pitch, elderly">🚬 Deep Gruff Veteran</button>
+            <button class="voice-chip" data-instruct="male, british accent, moderate pitch, young adult">🇬🇧 Sarcastic Brit</button>
+            <button class="voice-chip" data-instruct="whisper, male, low pitch">🤫 Quiet Grumble</button>
+          </div>
+        </div>
+
+        <div class="voice-section">
+          <h4>Test OmniVoice Synthesis</h4>
+          <div class="voice-test-row">
+            <input type="text" id="voice-test-text" value="Whiskey's poured, ice is clinking, and I was born ready." />
+            <button id="voice-test-btn" class="inspect-submit-btn">▶ Test Voice</button>
+          </div>
+          <a href="/omnivoice" target="_blank" class="secondary-btn" style="text-align:center; text-decoration:none; display:block; margin-top:8px; border-color:#ff007f; color:#fff;">🎛️ Open Full OmniVoice Web Studio (New Tab)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Password Auth Modal for Secret Intel -->
+  <div class="drawer-modal" id="intel-auth-modal" style="display:none; z-index:9999;">
+    <div class="drawer-panel" style="max-width:380px; padding:24px; text-align:center; border:1px solid #ff007f; box-shadow:0 0 30px rgba(255,0,127,0.3);">
+      <div style="font-size:2.2rem; margin-bottom:8px;">🔒</div>
+      <h3 style="font-family:'Orbitron',sans-serif; color:#00f0ff; margin-bottom:6px;">RESTRICTED ACCESS</h3>
+      <p style="font-size:0.85rem; color:#8e9db2; margin-bottom:16px;">Enter Ray's Passcode to view secret intelligence dossiers.</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <input type="password" id="intel-pass-input" placeholder="Enter password..." style="background:rgba(0,0,0,0.6); border:1px solid rgba(0,240,255,0.4); border-radius:8px; padding:10px; color:#fff; font-size:1rem; text-align:center; font-family:'JetBrains Mono',monospace;" />
+        <div id="intel-auth-error" style="color:#ff0055; font-size:0.8rem; display:none;">⚠️ Invalid password. Access denied.</div>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <button id="intel-auth-submit-btn" class="gen-submit-btn" style="flex:1; padding:10px;">🔓 Unlock Intel</button>
+          <button id="intel-auth-cancel-btn" class="secondary-btn" style="flex:1; padding:10px;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secret Intelligence Dossier Drawer -->
+  <div class="drawer-modal" id="intel-drawer" style="display:none;">
+    <div class="drawer-panel intel-panel">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>🕵️ Speaker Intelligence & Dossiers</h3>
+          <span class="gpu-badge" style="background:#ff0055;">SECRET AGENT PROFILER</span>
+        </div>
+        <button id="intel-drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body intel-body">
+        <div class="intel-summary-bar">
+          <span id="intel-target-count">0 Tracked Speakers</span>
+          <button id="intel-refresh-btn" class="secondary-btn" style="padding:4px 8px; font-size:12px;">🔄 Refresh Intel</button>
+        </div>
+        <div class="intel-speakers-list" id="intel-speakers-list">
+          <!-- Populated dynamically -->
+        </div>
+        <div class="intel-dossier-view" id="intel-dossier-view" style="display:none;">
+          <div class="dossier-header">
+            <h4 id="dossier-speaker-name">Target Dossier</h4>
+            <span id="dossier-speaker-role" class="gpu-badge">Role</span>
+          </div>
+          <div class="dossier-psych-card">
+            <div class="dossier-label">PSYCHOLOGICAL SUMMARY:</div>
+            <div id="dossier-psych-summary" class="dossier-text">Analyzing...</div>
+            <div class="dossier-subgrid">
+              <div><strong>Sentiment:</strong> <span id="dossier-sentiment">Neutral</span></div>
+              <div><strong>Vulnerabilities:</strong> <span id="dossier-vulnerabilities">None detected</span></div>
+            </div>
+          </div>
+          <div class="dossier-facts-section">
+            <div class="dossier-label">EXTRACTED INTELLIGENCE & FACTS:</div>
+            <ul id="dossier-facts-list" class="dossier-facts-list"></ul>
+          </div>
+          <div class="dossier-convs-section">
+            <div class="dossier-label">INTERCEPTED INTERACTION LOG:</div>
+            <div id="dossier-convs-list" class="dossier-convs-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/avatar.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

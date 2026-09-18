@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.venv/
+.venv-omni/
+env/
+venv/
+ENV/
+
+# Secrets & Environment variables
+.env
+.env.local
+*.key
+*.pem
+credentials.json
+
+# SQLite Data
+data/speaker_intelligence.db
+data/*.db
+
+# Logs & temp
+*.log
+*.png
+*.jpg.tmp
+node_modules/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

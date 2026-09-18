@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Raygent Stream Overlay</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: transparent !important;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+    }
+    .stream-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .stream-halo {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #visualizer-canvas {
+      width: 400px;
+      height: 400px;
+      position: absolute;
+      top: -40px;
+      left: -40px;
+    }
+    .avatar-frame {
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      border: 4px solid var(--accent-cyan);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+    }
+    .stream-caption {
+      background: rgba(10, 14, 23, 0.85);
+      border: 1px solid var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      color: #fff;
+      max-width: 450px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .stream-caption.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="stream-stage">
+    <div class="stream-halo">
+      <canvas id="visualizer-canvas" width="400" height="400"></canvas>
+      <div class="avatar-frame" id="avatar-frame">
+        <video id="avatar-video" playsinline muted loop preload="auto" class="avatar-media">
+          <source src="/static/avatars/ray_video.mp4" type="video/mp4">
+        </video>
+        <canvas id="avatar-portrait-canvas" width="360" height="360" class="avatar-media active"></canvas>
+      </div>
+      <div class="status-pill" id="agent-status-pill">
+        <span class="status-indicator"></span>
+        <span id="status-label">STREAM LIVE</span>
+      </div>
+    </div>
+    <div class="stream-caption" id="stream-caption"></div>
+  </div>
+
+  <script src="/static/avatar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const avatarEngine = new RaygentAvatarEngine();
+      const captionEl = document.getElementById('stream-caption');
+      
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${proto}//${window.location.host}/ws/chat`);
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'status') {
+          avatarEngine.setStatus(data.status);
+        } else if (data.type === 'pose') {
+          avatarEngine.setPose(data.pose);
+        } else if (data.type === 'avatar_change') {
+          avatarEngine.setAvatarSource(data.url, data.media_type || 'image');
+          captionEl.classList.add('active');
+          captionEl.textContent = `AVATAR: ${data.name.toUpperCase()}`;
+          setTimeout(() => captionEl.classList.remove('active'), 3500);
+        } else if (data.type === 'token') {
+          captionEl.classList.add('active');
+          captionEl.textContent += data.content;
+        } else if (data.type === 'audio') {
+          avatarEngine.playAudioUrl(data.url);
+        } else if (data.type === 'done') {
+          setTimeout(() => {
+            captionEl.classList.remove('active');
+            captionEl.textContent = '';
+          }, 6000);
+        }
+      };
+
+    });
+  </script>
+</body>
+</html>
