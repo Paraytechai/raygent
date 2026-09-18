@@ -545,8 +545,8 @@ async def get_dossier(speaker_id: str):
 
 @app.post("/api/chat")
 async def chat_rest(data: dict, request: Request):
-    prompt = data.get("prompt", "")
-    speaker_id = data.get("speaker_id", "ray")
+    prompt = data.get("prompt") or data.get("message") or ""
+    speaker_id = data.get("speaker_id") or data.get("speaker_name") or "ray"
     if not prompt:
         return JSONResponse({"error": "Prompt required"}, status_code=400)
     answer = await core.single_turn(prompt)
