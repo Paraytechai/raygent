@@ -99,6 +99,8 @@ async def list_avatars():
                         "type": "video" if is_video else "image",
                         "size": p.stat().st_size
                     })
+    return {"avatars": items}
+
 MOVIE_QUOTES = [
     {"quote": "I'm your huckleberry.", "movie": "Tombstone", "pose": "without_me"},
     {"quote": "Say hello to my little friend!", "movie": "Scarface", "pose": "whats_it_to_you"},
@@ -156,7 +158,8 @@ async def get_random_movie_quote():
     return selected
 
 @app.get("/api/movie_argument")
-async def get_random_movie_argument():
+@app.post("/api/movie_argument")
+async def get_random_movie_argument(request: Request = None):
     import random
     selected = random.choice(MOVIE_ARGUMENTS)
     return selected
