@@ -16,6 +16,12 @@ ENV/
 *.pem
 credentials.json
 
+# Generated Audio (keep reference voices)
+static/audio/ray_*.wav
+static/audio/ray_*.mp3
+!static/audio/ray_reference_voice.wav
+!static/audio/ray_reference_voice_clean.wav
+
 # SQLite Data
 data/speaker_intelligence.db
 data/*.db
