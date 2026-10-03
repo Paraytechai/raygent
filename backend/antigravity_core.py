@@ -73,7 +73,7 @@ def get_auth_token() -> Optional[str]:
 
 class RaygentCore:
     def _get_client(self) -> genai.Client:
-        # 1. Direct Google AI Studio API Key
+        # 1. Direct Google API (Google AI Studio Key)
         api_key = os.getenv("GOOGLE_API_KEY")
         use_vertex = os.getenv("USE_VERTEX", "false").lower() in ("true", "1")
         if api_key and not use_vertex:

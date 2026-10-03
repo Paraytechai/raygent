@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import uuid
 import json
@@ -141,10 +141,18 @@ class OmniVoiceEngine:
 
     def _synthesize_cloud_neural(self, clean_text: str) -> Tuple[str, float]:
         token = self._get_cloud_token()
-        if not token:
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not token and not api_key:
             return "", 0.0
         try:
             url = "https://texttospeech.googleapis.com/v1/text:synthesize"
+            headers = {"Content-Type": "application/json"}
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
+                headers["X-Goog-User-Project"] = GCP_PROJECT
+            elif api_key:
+                url += f"?key={api_key}"
+
             payload = {
                 "input": {"text": clean_text},
                 "voice": {
@@ -155,11 +163,6 @@ class OmniVoiceEngine:
                 "audioConfig": {
                     "audioEncoding": "MP3"
                 }
-            }
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-                "X-Goog-User-Project": GCP_PROJECT
             }
             req = urllib.request.Request(
                 url, 
