@@ -73,13 +73,7 @@ def get_auth_token() -> Optional[str]:
 
 class RaygentCore:
     def _get_client(self) -> genai.Client:
-        # 1. Direct Google API (Google AI Studio Key)
-        api_key = os.getenv("GOOGLE_API_KEY")
-        use_vertex = os.getenv("USE_VERTEX", "false").lower() in ("true", "1")
-        if api_key and not use_vertex:
-            return genai.Client(api_key=api_key)
-
-        # 2. Google Cloud Vertex AI Auth
+        # 1. Google Cloud Vertex AI Auth (Metadata server on Cloud Run or gcloud ADC)
         token = get_auth_token()
         if token:
             creds = google.oauth2.credentials.Credentials(token)
@@ -89,8 +83,15 @@ class RaygentCore:
                 location=LOCATION,
                 credentials=creds
             )
+        
+        # 2. Direct Google AI Studio API Key (if provided and valid)
+        api_key = os.getenv("GOOGLE_API_KEY")
         if api_key:
-            return genai.Client(api_key=api_key)
+            try:
+                return genai.Client(api_key=api_key)
+            except Exception:
+                pass
+
         return genai.Client(vertexai=True, project=GCP_PROJECT, location=LOCATION)
 
     async def stream_chat(self, user_message: str) -> AsyncGenerator[Dict[str, Any], None]:
