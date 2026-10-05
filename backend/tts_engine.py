@@ -141,17 +141,16 @@ class OmniVoiceEngine:
 
     def _synthesize_cloud_neural(self, clean_text: str) -> Tuple[str, float]:
         token = self._get_cloud_token()
-        api_key = os.getenv("GOOGLE_API_KEY")
-        if not token and not api_key:
+        if not token:
+            print("[Cloud Neural TTS] No auth token available for texttospeech.googleapis.com")
             return "", 0.0
         try:
             url = "https://texttospeech.googleapis.com/v1/text:synthesize"
-            headers = {"Content-Type": "application/json"}
-            if token:
-                headers["Authorization"] = f"Bearer {token}"
-                headers["X-Goog-User-Project"] = GCP_PROJECT
-            elif api_key:
-                url += f"?key={api_key}"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {token}",
+                "X-Goog-User-Project": GCP_PROJECT
+            }
 
             payload = {
                 "input": {"text": clean_text},
@@ -169,7 +168,7 @@ class OmniVoiceEngine:
                 data=json.dumps(payload).encode("utf-8"),
                 headers=headers
             )
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urllib.request.urlopen(req, timeout=8) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 audio_content = res_data.get("audioContent")
                 if audio_content:
@@ -183,7 +182,7 @@ class OmniVoiceEngine:
                     self._cleanup_old_audio()
                     return f"/static/audio/{filename}", duration
         except Exception as e:
-            print(f"[Cloud Neural TTS Note]: {e}")
+            print(f"[Cloud Neural TTS Error]: {e}")
         return "", 0.0
 
     def _cleanup_old_audio(self):
