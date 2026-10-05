@@ -26,9 +26,6 @@
       <button id="mini-mode-toggle" class="mode-btn mini" title="Toggle Mini Widget Mode (Alt+M)">
         🗖 Mini Mode
       </button>
-      <button id="page-inspector-toggle" class="mode-btn inspect" title="Open Playwright Page Inspector">
-        🌐 Inspector
-      </button>
       <button id="hud-minimize-btn" class="icon-btn" title="Minimize / Float Mode">🗕</button>
       <button id="hud-close-btn" class="icon-btn" title="Hide to Tray">✕</button>
     </div>
@@ -85,22 +82,6 @@
       </div>
     </section>
 
-    <!-- Page Inspector Widget Drawer -->
-    <section class="inspector-drawer" id="inspector-drawer" style="display:none;">
-      <div class="inspector-header">
-        <span class="inspector-title">🌐 Playwright Page Inspector</span>
-        <button id="inspector-close-btn" class="icon-btn">✕</button>
-      </div>
-      <div class="inspector-controls">
-        <input type="text" id="inspector-url" placeholder="Enter URL (e.g. learn.devry.edu, github.com)..." value="https://devryu.instructure.com/courses/141342/modules" />
-        <button id="inspect-btn" class="inspect-submit-btn">Inspect & Analyze</button>
-      </div>
-      <div class="inspector-preview-zone" id="inspector-preview-zone" style="display:none;">
-        <img id="inspector-screenshot" src="" alt="Page Screenshot" />
-        <div class="inspector-status" id="inspector-status">Analyzing DOM...</div>
-      </div>
-    </section>
-
     <!-- Thinking Trace / Reasoning Accordion -->
     <section class="thoughts-section" id="thoughts-section" style="display:none;">
       <div class="thoughts-header" id="thoughts-toggle">
@@ -119,7 +100,7 @@
           <span class="timestamp">NOW</span>
         </div>
         <div class="bubble-body">
-          What’s up, Ray? Got the Hawaiian shirt pressed, sunglasses on, and a fresh glass of whiskey. My 6 poses are locked and loaded, Playwright page inspector is ready to snoop any web URL, and I can run whatever code you throw at me. What are we getting into?
+          What’s up, Ray? Got the Hawaiian shirt pressed, sunglasses on, and a fresh glass of whiskey. My 6 poses are locked and loaded, and I can run whatever code or task you throw at me. What are we getting into?
         </div>
       </div>
     </section>

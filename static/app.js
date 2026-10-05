@@ -13,16 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const thoughtsContent = document.getElementById('thoughts-content');
   const thoughtsToggle = document.getElementById('thoughts-toggle');
 
-  // Page Inspector Elements
-  const inspectorToggle = document.getElementById('page-inspector-toggle');
-  const inspectorDrawer = document.getElementById('inspector-drawer');
-  const inspectorCloseBtn = document.getElementById('inspector-close-btn');
-  const inspectorUrl = document.getElementById('inspector-url');
-  const inspectBtn = document.getElementById('inspect-btn');
-  const inspectorPreviewZone = document.getElementById('inspector-preview-zone');
-  const inspectorScreenshot = document.getElementById('inspector-screenshot');
-  const inspectorStatus = document.getElementById('inspector-status');
-
   // Pose Ribbon Buttons
   document.querySelectorAll('.pose-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -72,53 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedMode === 'mini') {
     setMiniMode(true);
   }
-
-  // Page Inspector Handlers
-  inspectorToggle.addEventListener('click', () => {
-    const isShown = inspectorDrawer.style.display !== 'none';
-    inspectorDrawer.style.display = isShown ? 'none' : 'flex';
-  });
-
-  inspectorCloseBtn.addEventListener('click', () => {
-    inspectorDrawer.style.display = 'none';
-  });
-
-  inspectBtn.addEventListener('click', async () => {
-    const url = inspectorUrl.value.trim();
-    if (!url) return;
-
-    avatarEngine.setPose('let_me_check');
-    avatarEngine.setStatus('thinking');
-    inspectorPreviewZone.style.display = 'flex';
-    inspectorStatus.textContent = 'Launching Playwright browser & capturing DOM...';
-
-    try {
-      const res = await fetch('/api/inspect_page', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url })
-      });
-      const data = await res.json();
-      if (data.status === 'success') {
-        inspectorScreenshot.src = data.screenshot_url + '?t=' + Date.now();
-        inspectorStatus.textContent = `Captured: ${data.title}`;
-        appendUserBubble(`Inspect web page: ${url}`);
-        
-        createAiBubble();
-        currentAiBody.innerHTML = formatMarkdown(data.analysis);
-        chatViewport.scrollTop = chatViewport.scrollHeight;
-        avatarEngine.setPose('without_me');
-        speakResponse(data.analysis);
-      } else {
-        inspectorStatus.textContent = 'Error: ' + data.message;
-        avatarEngine.setPose('no');
-        avatarEngine.setStatus('idle');
-      }
-    } catch (err) {
-      inspectorStatus.textContent = 'Inspection failed: ' + err;
-      avatarEngine.setStatus('idle');
-    }
-  });
 
   // Avatar Drawer
   const avatarDrawer = document.getElementById('avatar-drawer');
@@ -527,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
   micBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopListening(); });
 
   window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && document.activeElement !== userInput && document.activeElement !== inspectorUrl) {
+    if (e.code === 'Space' && document.activeElement !== userInput) {
       e.preventDefault();
       startListening();
     } else if (e.key === '/' && document.activeElement !== userInput) {
@@ -538,7 +481,6 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleMiniMode();
     } else if (e.key === 'Escape') {
       avatarDrawer.classList.remove('open');
-      inspectorDrawer.style.display = 'none';
       userInput.blur();
     }
   });
