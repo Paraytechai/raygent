@@ -1,0 +1,50 @@
+[
+  {
+    "name": "chat_with_raygent",
+    "description": "Send a prompt or academic question to Raygent. Returns conversational answer, pose, and Texas neural voice audio.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "The user message, task, or question."
+        },
+        "speaker_name": {
+          "type": "string",
+          "description": "Speaker identifier for intelligence profiling."
+        }
+      },
+      "required": ["message"]
+    }
+  },
+  {
+    "name": "run_python_code",
+    "description": "Execute arbitrary Python code securely on Raygent compute environment.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "The Python source code to execute."
+        }
+      },
+      "required": ["code"]
+    }
+  },
+  {
+    "name": "get_movie_quote",
+    "description": "Retrieve a famous classic movie one-liner with associated avatar pose.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "get_speaker_intelligence",
+    "description": "Retrieve intelligence profiling dossiers for known speakers.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  }
+]

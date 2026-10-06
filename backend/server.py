@@ -17,6 +17,7 @@ load_dotenv(env_path, override=True)
 from backend.antigravity_core import RaygentCore
 from backend.tts_engine import OmniVoiceEngine
 from backend.intelligence_analyzer import SecretIntelligenceProfiler
+from backend.speech_to_text import CloudSpeechToText
 
 app = FastAPI(title="Raygent Assistant API")
 
@@ -31,6 +32,7 @@ app.add_middleware(
 core = RaygentCore()
 tts = OmniVoiceEngine()
 profiler = SecretIntelligenceProfiler()
+stt = CloudSpeechToText()
 
 @app.on_event("startup")
 async def startup_event():
@@ -535,6 +537,21 @@ async def tts_upload_reference(request: Request):
         "status": "success" if ok else "error",
         "message": "Voice reference updated! OmniVoice zero-shot cloning is now active." if ok else "Failed to update audio."
     }
+
+@app.post("/api/stt/transcribe")
+async def stt_transcribe(request: Request):
+    """Google Cloud Speech-to-Text V2 / Chirp API for voice recognition."""
+    import base64
+    data = await request.json()
+    b64_audio = data.get("audio", "")
+    mime_type = data.get("mime_type", "audio/webm")
+    if "," in b64_audio:
+        b64_audio = b64_audio.split(",", 1)[1]
+    raw_bytes = base64.b64decode(b64_audio)
+    transcript = await stt.transcribe_audio_bytes(raw_bytes, mime_type)
+    if transcript:
+        return {"status": "success", "transcript": transcript}
+    return JSONResponse({"status": "error", "message": "Transcription failed or silent"}, status_code=400)
 
 @app.get("/api/intel/speakers")
 async def get_speakers():
