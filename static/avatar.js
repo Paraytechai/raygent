@@ -472,35 +472,12 @@ class RaygentAvatarEngine {
     ctx.clearRect(0, 0, w, h);
 
     const time = now * 0.002;
-    const energy = this.speechEnergy;
-
-    // Organic Breathing & Micro-Motions
-    let breath = Math.sin(time * 1.6) * 2.8;
-    let swayX = Math.cos(time * 0.8) * 1.5;
-    let tilt = Math.sin(time * 0.5) * 0.012; // rad
-
-    // State-specific posture shifts
-    if (this.currentStatus === 'thinking') {
-      tilt += 0.035; // Thoughtful head tilt to the side
-      swayX += Math.sin(time * 1.2) * 1.8;
-      breath *= 0.6; // slower deep breath
-    } else if (this.currentStatus === 'speaking') {
-      // Lively rhythmic micro-nodding synced to speech cadence
-      breath += Math.sin(time * 9.0) * (2.5 + energy * 5.0);
-      swayX += Math.cos(time * 4.5) * 2.0;
-    } else if (this.currentStatus === 'listening') {
-      breath += 1.0; // slight lean forward
-    }
-
+    // Perfectly Stable Portrait - No shaking, wobbling, or moving during lipsync
     // Draw active pose or cross-fade between prev and active
     const activeImg = this.poseImages[this.activePose];
     const prevImg = this.poseImages[this.prevPose];
 
     ctx.save();
-    // Center transformation pivot for natural head tilt/sway
-    ctx.translate(w / 2 + swayX, h / 2 + breath);
-    ctx.rotate(tilt);
-    ctx.translate(-w / 2, -h / 2);
 
     if (this.transitionProgress < 1.0 && prevImg && prevImg.complete) {
       // Draw previous pose fading out
