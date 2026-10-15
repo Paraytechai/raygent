@@ -472,6 +472,7 @@ class RaygentAvatarEngine {
     ctx.clearRect(0, 0, w, h);
 
     const time = now * 0.002;
+    const energy = this.speechEnergy || 0;
     // Perfectly Stable Portrait - No shaking, wobbling, or moving during lipsync
     // Draw active pose or cross-fade between prev and active
     const activeImg = this.poseImages[this.activePose];
