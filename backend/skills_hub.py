@@ -74,6 +74,25 @@ class SkillsHub:
                 except Exception as e:
                     pass
 
+        # Fallback for containerized environments (Cloud Run)
+        if not self.skills_registry:
+            fallback_json = Path(__file__).resolve().parent.parent / "data" / "skills_catalog.json"
+            if fallback_json.exists():
+                try:
+                    import json
+                    with open(fallback_json, "r", encoding="utf-8") as f:
+                        catalog = json.load(f)
+                        for item in catalog.get("skills", []):
+                            self.skills_registry[item["name"]] = {
+                                "name": item["name"],
+                                "description": item.get("description", ""),
+                                "category": item.get("category", "Specialized Agent Skills"),
+                                "path": item.get("path", ""),
+                                "content": item.get("description", "")
+                            }
+                except Exception:
+                    pass
+
     def list_skills(self, filter_text: str = "", category: str = "") -> str:
         """List indexed skills grouped by category.
         

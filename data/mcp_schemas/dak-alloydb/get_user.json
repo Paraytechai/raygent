@@ -1,0 +1,1 @@
+{"name":"get_user","description":"Get a user in a given project, location, and cluster","parameters":{"description":"Message for getting a User","properties":{"name":{"description":"Required. The name of the resource. For the required format, see the comment on the User.name field.","type":"string"}},"required":["name"],"type":"object"}}

@@ -1,0 +1,1 @@
+{"name":"get_bucket_metadata","description":"Gets the metadata of a bucket.","parameters":{"description":"Request message for GetBucketMetadata.","properties":{"bucketName":{"description":"Required. The name of the bucket to get metadata for.","type":"string"}},"required":["bucketName"],"type":"object"}}

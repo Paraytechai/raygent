@@ -1,0 +1,1 @@
+{"name":"delete_bucket","description":"Deletes a bucket from a project.","parameters":{"description":"Request message for DeleteBucket.","properties":{"bucketName":{"description":"Required. The name of the bucket to delete.","type":"string"}},"required":["bucketName"],"type":"object"}}

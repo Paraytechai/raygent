@@ -1,0 +1,1 @@
+{"name":"get_notebook_info","description":"Get summary information about a notebook","parameters":{"properties":{"notebookPath":{"description":"Path to the notebook file","type":"string"}},"required":["notebookPath"],"type":"object"}}

@@ -1,0 +1,1 @@
+{"name":"delete_cell","description":"Delete a specific cell from a notebook","parameters":{"properties":{"cellIndex":{"description":"0-based index of the cell to delete","type":"number"},"notebookPath":{"description":"Path to the notebook file","type":"string"}},"required":["notebookPath","cellIndex"],"type":"object"}}

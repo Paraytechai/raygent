@@ -1,0 +1,1 @@
+{"name":"get_credits","description":"Return the current Studio credit balance for this API key.","parameters":{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{},"type":"object"}}

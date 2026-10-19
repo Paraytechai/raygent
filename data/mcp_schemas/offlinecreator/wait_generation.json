@@ -1,0 +1,1 @@
+{"name":"wait_generation","description":"Poll until completed/failed or timeout. Completed responses include a signed outputUrl.","parameters":{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"generationId":{"type":"string"},"timeoutSeconds":{"maximum":300,"minimum":5,"type":"integer"}},"required":["generationId"],"type":"object"}}

@@ -1,0 +1,1 @@
+{"name":"list_backup_schedules","description":"List Firestore backup schedules.","parameters":{"description":"The request for FirestoreAdmin.ListBackupSchedules.","properties":{"parent":{"description":"Required. The parent database. Format is `projects/{project}/databases/{database}`.","type":"string"}},"required":["parent"],"type":"object"}}

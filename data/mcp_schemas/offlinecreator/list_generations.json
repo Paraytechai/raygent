@@ -1,0 +1,1 @@
+{"name":"list_generations","description":"List recent generations for this account.","parameters":{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"limit":{"maximum":100,"minimum":1,"type":"integer"}},"type":"object"}}

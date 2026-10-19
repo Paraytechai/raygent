@@ -1,0 +1,1 @@
+{"name":"get_organizations","description":"Retrieves all accessible ClickHouse Cloud organizations.","parameters":{"$schema":"http://json-schema.org/draft-07/schema#","properties":{},"type":"object"}}

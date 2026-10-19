@@ -1,0 +1,1 @@
+{"name":"read_cell","description":"Read the content of a specific cell in a notebook","parameters":{"properties":{"cellIndex":{"description":"0-based index of the cell","type":"number"},"notebookPath":{"description":"Path to the notebook file","type":"string"}},"required":["notebookPath","cellIndex"],"type":"object"}}

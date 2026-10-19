@@ -1,0 +1,231 @@
+{
+  "mcpServers": {
+    "comfy-mcp": {
+      "command": "D:\\odysseus-dev\\comfy-mcp-env\\Scripts\\comfy-mcp.exe",
+      "env": {
+        "COMFYUI_URL": "http://127.0.0.1:8188",
+        "COMFY_BIN": "D:\\odysseus-dev\\comfy-mcp-env\\Scripts\\comfy.exe"
+      }
+    },
+    "computer-use": {
+      "args": [
+        "-y",
+        "computer-use-mcp"
+      ],
+      "command": "npx"
+    },
+    "firebase-mcp-server": {
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "mcp"
+      ],
+      "command": "npx"
+    },
+    "playwright": {
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "command": "npx"
+    },
+    "google-cloud-audit-manager-us-central1": {
+      "serverUrl": "https://auditmanager.us-central1.rep.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-audit-manager-europe-west1": {
+      "serverUrl": "https://auditmanager.europe-west1.rep.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "antimetal": {
+      "serverUrl": "https://mcp.antimetal.com"
+    },
+    "windsor": {
+      "serverUrl": "https://mcp.windsor.ai"
+    },
+    "cloudrun": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google-cloud/cloud-run-mcp"
+      ]
+    },
+    "posthog": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.posthog.com/mcp"
+      ]
+    },
+    "mobbin": {
+      "serverUrl": "https://api.mobbin.com/mcp"
+    },
+    "google-kubernetes-engine": {
+      "serverUrl": "https://container.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "dart-mcp-server": {
+      "command": "dart",
+      "args": [
+        "mcp-server"
+      ]
+    },
+    "splunk": {
+      "serverUrl": "https://mcp-oauth-google.stg.splunkcloud.com/en-US/splunkd/__raw/services/mcp"
+    },
+    "gmp-code-assist": {
+      "serverUrl": "https://mapscodeassist.googleapis.com/mcp"
+    },
+    "google-developer-knowledge": {
+      "serverUrl": "https://developerknowledge.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "clickhouse": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.clickhouse.cloud/mcp"
+      ]
+    },
+    "google-compute-engine": {
+      "serverUrl": "https://compute.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "android-management-api": {
+      "serverUrl": "https://androidmanagement.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-resource-manager": {
+      "serverUrl": "https://cloudresourcemanager.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "vertex-ai-search": {
+      "serverUrl": "https://discoveryengine.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-firestore": {
+      "serverUrl": "https://firestore.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-logging": {
+      "serverUrl": "https://logging.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-managed-service-for-apache-kafka": {
+      "serverUrl": "https://managedkafka.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-monitoring": {
+      "serverUrl": "https://monitoring.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-pubsub": {
+      "serverUrl": "https://pubsub.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "chrome-devtools-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "google-cloud-unified-maintenance": {
+      "serverUrl": "https://maintenance.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "personalized-service-health": {
+      "serverUrl": "https://servicehealth.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-cloud-quotas": {
+      "serverUrl": "https://cloudquotas.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "arize-tracing-assistant": {
+      "command": "uvx",
+      "args": [
+        "arize-tracing-assistant@latest"
+      ]
+    },
+    "supabase": {
+      "serverUrl": "https://mcp.supabase.com/mcp"
+    },
+    "mcp-server-neon": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.neon.tech/sse"
+      ]
+    },
+    "figma-dev-mode-mcp-server": {
+      "serverUrl": "http://127.0.0.1:3845/mcp"
+    },
+    "github-mcp-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "knowledge-catalog": {
+      "serverUrl": "https://dataplex.googleapis.com/mcp",
+      "authProviderType": "google_credentials"
+    },
+    "google-home-developer": {
+      "serverUrl": "https://homedevelopers.googleapis.com/mcp"
+    },
+    "notebooks": {
+      "command": "node",
+      "args": [
+        "c:\\Users\\cyber\\.antigravity-ide\\extensions\\googlecloudtools.datacloud-0.11.0-universal\\mcp_servers\\cli\\mcp_proxy_bundle.js",
+        "notebooks-antigravityide"
+      ]
+    },
+    "visualization": {
+      "command": "node",
+      "args": [
+        "c:\\Users\\cyber\\.antigravity-ide\\extensions\\googlecloudtools.datacloud-0.11.0-universal\\mcp_servers\\cli\\mcp_proxy_bundle.js",
+        "visualization-antigravityide"
+      ]
+    },
+    "data-agent-kit": {
+      "command": "node",
+      "args": [
+        "c:\\Users\\cyber\\.antigravity-ide\\extensions\\googlecloudtools.datacloud-0.11.0-universal\\mcp_servers\\cli\\mcp_proxy_bundle.js",
+        "dataAgentKit-antigravityide"
+      ]
+    },
+    "offlinecreator": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\cyber\\node_modules\\@offlinecreator\\mcp\\dist\\index.js"
+      ],
+      "env": {
+        "OFFLINECREATOR_API_KEY": "${OFFLINECREATOR_API_KEY}"
+      }
+    },
+    "rea": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "d:\\ear husle\\package\\scripts\\rea.mjs",
+        "mcp"
+      ],
+      "env": {
+        "GHIDRA_INSTALL_DIR": "D:\\decompilers\\ghidra_12.1.4_PUBLIC",
+        "REA_JADX_MCP_JAR": "D:\\decompilers\\jadx\\jadx-headless-mcp-0.7.1-all.jar",
+        "JAVA_HOME": "C:\\Program Files\\Java\\jdk-26"
+      }
+    }
+  }
+}

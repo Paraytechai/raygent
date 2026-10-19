@@ -1,0 +1,1 @@
+{"name":"get_cell_outputs","description":"Read outputs from a code cell by index","parameters":{"properties":{"cellIndex":{"description":"0-based index of the cell to inspect","type":"number"},"notebookPath":{"description":"Path to the notebook file","type":"string"}},"required":["notebookPath","cellIndex"],"type":"object"}}

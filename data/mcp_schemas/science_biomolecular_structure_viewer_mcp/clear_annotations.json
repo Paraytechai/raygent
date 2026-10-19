@@ -1,0 +1,1 @@
+{"name":"clear_annotations","description":"Removes all annotation notes (labelled selections) from the active structure. Color highlights are kept.","parameters":{"properties":{},"type":"object"}}

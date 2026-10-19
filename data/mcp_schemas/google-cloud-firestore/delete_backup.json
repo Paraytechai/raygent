@@ -1,0 +1,1 @@
+{"name":"delete_backup","description":"Delete a Firestore backup.","parameters":{"description":"The request for FirestoreAdmin.DeleteBackup.","properties":{"name":{"description":"Required. Name of the backup to delete. format is `projects/{project}/locations/{location}/backups/{backup}`.","type":"string"}},"required":["name"],"type":"object"}}

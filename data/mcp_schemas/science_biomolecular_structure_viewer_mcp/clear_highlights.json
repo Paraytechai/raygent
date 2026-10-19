@@ -1,0 +1,1 @@
+{"name":"clear_highlights","description":"Removes all residue color highlights (unlabelled selections) from the viewer. Annotation notes are kept.","parameters":{"properties":{},"type":"object"}}

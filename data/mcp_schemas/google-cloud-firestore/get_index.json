@@ -1,0 +1,1 @@
+{"name":"get_index","description":"Get a Firestore index.","parameters":{"description":"The request for FirestoreAdmin.GetIndex.","properties":{"name":{"description":"Required. A name of the form `projects/{project_id}/databases/{database_id}/collectionGroups/{collection_id}/indexes/{index_id}`","type":"string"}},"required":["name"],"type":"object"}}

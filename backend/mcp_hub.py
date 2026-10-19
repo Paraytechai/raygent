@@ -29,7 +29,12 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = Path(os.path.expanduser("~")) / ".gemini" / "config"
 MCP_CONFIG_FILE = CONFIG_DIR / "mcp_config.json"
+if not MCP_CONFIG_FILE.exists():
+    MCP_CONFIG_FILE = BASE_DIR / "data" / "mcp_config.json"
+
 MCP_SCHEMAS_DIR = Path(os.path.expanduser("~")) / ".gemini" / "antigravity" / "mcp"
+if not MCP_SCHEMAS_DIR.exists():
+    MCP_SCHEMAS_DIR = BASE_DIR / "data" / "mcp_schemas"
 
 # Cached MCP Server Configs
 _CACHED_MCP_CONFIG = None

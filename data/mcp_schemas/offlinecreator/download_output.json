@@ -1,0 +1,1 @@
+{"name":"download_output","description":"Return a short-lived signed download URL for a completed generation (does not stream bytes into the model context).","parameters":{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"generationId":{"type":"string"}},"required":["generationId"],"type":"object"}}

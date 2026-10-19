@@ -34,13 +34,16 @@ def init_memory_db():
         """)
 
         # Clean out any obsolete academic facts from earlier testing
-        cursor.execute("""
-            DELETE FROM intelligence_dossier 
-            WHERE extracted_fact LIKE '%DeVry%' 
-               OR extracted_fact LIKE '%MATH 121%' 
-               OR extracted_fact LIKE '%Zoe Likoudis%'
-               OR extracted_fact LIKE '%ALEKS%'
-        """)
+        try:
+            cursor.execute("""
+                DELETE FROM intelligence_dossier 
+                WHERE extracted_fact LIKE '%DeVry%' 
+                   OR extracted_fact LIKE '%MATH 121%' 
+                   OR extracted_fact LIKE '%Zoe Likoudis%'
+                   OR extracted_fact LIKE '%ALEKS%'
+            """)
+        except Exception:
+            pass
 
         # Seed fundamental persistent memories
         base_memories = [

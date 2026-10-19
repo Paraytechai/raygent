@@ -1,0 +1,1 @@
+{"name":"remove_annotation","description":"Removes one annotation note by the id of its labelled entry in state.selections (as returned by annotate_region or get_state).","parameters":{"properties":{"id":{"description":"Id of a labelled entry in state.selections, e.g. \"s2\".","type":"string"}},"required":["id"],"type":"object"}}

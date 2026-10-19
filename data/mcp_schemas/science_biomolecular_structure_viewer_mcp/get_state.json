@@ -1,0 +1,1 @@
+{"name":"get_state","description":"Returns this sidecar's current state.json and its version.","parameters":{"properties":{},"type":"object"}}

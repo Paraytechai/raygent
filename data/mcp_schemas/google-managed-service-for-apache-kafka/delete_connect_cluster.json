@@ -1,0 +1,1 @@
+{"name":"delete_connect_cluster","description":"Deletes a Google Cloud Managed service for Apache Kafka Connect cluster.\n\nThis tool returns a long-running operation (LRO) that you can poll using the `get_operation` tool to track the Connect cluster deletion status. Connect cluster deletions can take 10 minutes or longer.\n","parameters":null}

@@ -1,0 +1,1 @@
+{"name":"get_generation","description":"Fetch status. When completed, outputUrl is a short-lived signed download link.","parameters":{"$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"generationId":{"type":"string"}},"required":["generationId"],"type":"object"}}

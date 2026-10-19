@@ -1,0 +1,1 @@
+{"name":"delete_object","description":"Deletes an object from Cloud Storage.","parameters":{"description":"Request message for DeleteObject.","properties":{"bucketName":{"description":"Required.","type":"string"},"objectName":{"description":"Required.","type":"string"}},"required":["bucketName","objectName"],"type":"object"}}

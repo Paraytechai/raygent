@@ -1,0 +1,1 @@
+{"name":"list_cells","description":"List all cells in a notebook","parameters":{"properties":{"maxLength":{"description":"Maximum length of the preview snippet for each cell (optional, defaults to 100)","type":"number"},"notebookPath":{"description":"Path to the notebook file","type":"string"}},"required":["notebookPath"],"type":"object"}}

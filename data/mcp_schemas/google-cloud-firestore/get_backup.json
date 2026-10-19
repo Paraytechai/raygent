@@ -1,0 +1,1 @@
+{"name":"get_backup","description":"Get a Firestore backup.","parameters":{"description":"The request for FirestoreAdmin.GetBackup.","properties":{"name":{"description":"Required. Name of the backup to fetch. Format is `projects/{project}/locations/{location}/backups/{backup}`.","type":"string"}},"required":["name"],"type":"object"}}

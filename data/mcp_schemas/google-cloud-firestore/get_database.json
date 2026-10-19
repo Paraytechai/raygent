@@ -1,0 +1,1 @@
+{"name":"get_database","description":"Get a Firestore database.","parameters":{"description":"The request for FirestoreAdmin.GetDatabase.","properties":{"name":{"description":"Required. A name of the form `projects/{project_id}/databases/{database_id}`","type":"string"}},"required":["name"],"type":"object"}}

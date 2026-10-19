@@ -1,0 +1,1 @@
+{"name":"get_database_ddl","description":"Get database schema for a given database.","parameters":{"description":"The request for GetDatabaseDdl.","properties":{"database":{"description":"Required. The database whose schema we wish to get. Values are of the form `projects//instances//databases/`","type":"string"}},"required":["database"],"type":"object"}}

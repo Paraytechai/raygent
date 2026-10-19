@@ -1,0 +1,1 @@
+{"name":"get_config","description":"Get information about a specific Spanner instance configuration.","parameters":{"description":"The request for GetInstanceConfigRequest.","properties":{"name":{"description":"Required. The name of the requested instance configuration. Values are of the form `projects//instanceConfigs/`.","type":"string"}},"required":["name"],"type":"object"}}

@@ -1,0 +1,1 @@
+{"name":"get_web_app","description":"Gets a web app. Requires the resource name in the format: enterprises/{enterpriseId}/webApps/{webAppId}.","parameters":{"description":"Request to get a web app.","properties":{"name":{"description":"The name of the web app in the form `enterprises/{enterpriseId}/webApps/{packageName}`.","type":"string"}},"type":"object"}}
