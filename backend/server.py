@@ -19,6 +19,15 @@ from backend.tts_engine import OmniVoiceEngine
 from backend.intelligence_analyzer import SecretIntelligenceProfiler
 from backend.speech_to_text import CloudSpeechToText
 
+try:
+    from backend.mcp_hub import call_mcp_tool, get_mcp_config, MCP_SCHEMAS_DIR, get_mcp_tool_info
+    from backend.skills_hub import skills_hub
+    from backend.memory_manager import get_all_memories, remember, forget, recall
+except ImportError:
+    from mcp_hub import call_mcp_tool, get_mcp_config, MCP_SCHEMAS_DIR, get_mcp_tool_info
+    from skills_hub import skills_hub
+    from memory_manager import get_all_memories, remember, forget, recall
+
 app = FastAPI(title="Raygent Assistant API")
 
 app.add_middleware(
@@ -562,6 +571,93 @@ async def get_speakers():
 async def get_dossier(speaker_id: str):
     """Secret Dossier: Retrieve full intelligence facts on a specific person."""
     return profiler.get_speaker_dossier(speaker_id)
+
+# ==========================================
+# MCP, SKILLS & MEMORY API ENDPOINTS
+# ==========================================
+
+@app.get("/api/mcp/servers")
+async def api_list_mcp_servers():
+    """List all registered MCP servers with tool schemas and execution types."""
+    mcp_cfg = get_mcp_config()
+    servers = []
+    
+    # Disk schemas
+    disk_tools = {}
+    if MCP_SCHEMAS_DIR.exists():
+        for entry in MCP_SCHEMAS_DIR.iterdir():
+            if entry.is_dir():
+                tools = [f.stem for f in entry.iterdir() if f.is_file() and f.suffix == ".json"]
+                if tools:
+                    disk_tools[entry.name] = sorted(tools)
+
+    all_names = sorted(set(list(mcp_cfg.keys()) + list(disk_tools.keys())))
+    for name in all_names:
+        cfg = mcp_cfg.get(name, {})
+        tools = disk_tools.get(name, [])
+        if not tools and "serverUrl" in cfg:
+            tools = ["remote_call"]
+        server_type = "Google Cloud HTTP" if cfg.get("authProviderType") == "google_credentials" else ("HTTP/SSE" if "serverUrl" in cfg else "Local Stdio")
+        servers.append({
+            "name": name,
+            "type": server_type,
+            "tool_count": len(tools),
+            "tools": tools,
+            "url": cfg.get("serverUrl"),
+            "command": cfg.get("command")
+        })
+    return {"servers": servers, "total": len(servers)}
+
+@app.post("/api/mcp/call")
+async def api_call_mcp(data: dict):
+    """Execute any tool across any of the registered MCP servers."""
+    server = data.get("server")
+    tool = data.get("tool")
+    args = data.get("arguments", {})
+    if not server or not tool:
+        return JSONResponse({"error": "Server and tool parameters required"}, status_code=400)
+    result = call_mcp_tool(server, tool, args)
+    return {"status": "success", "server": server, "tool": tool, "result": result}
+
+@app.get("/api/skills")
+async def api_list_skills():
+    """List all 140+ specialized domain skills."""
+    return {"skills": skills_hub.get_all_skills_json(), "total": len(skills_hub.skills_registry)}
+
+@app.get("/api/skills/{skill_name}")
+async def api_get_skill(skill_name: str):
+    """Retrieve full skill instructions and guidelines."""
+    data = skills_hub.skills_registry.get(skill_name)
+    if not data:
+        for k, v in skills_hub.skills_registry.items():
+            if skill_name.lower() in k.lower():
+                data = v
+                break
+    if not data:
+        return JSONResponse({"error": f"Skill '{skill_name}' not found"}, status_code=404)
+    return {"skill": data}
+
+@app.get("/api/memory")
+async def api_get_memories():
+    """Retrieve all permanent user memories and active context."""
+    return {"memories": get_all_memories()}
+
+@app.post("/api/memory")
+async def api_save_memory(data: dict):
+    """Save or update a permanent user memory."""
+    key = data.get("key")
+    value = data.get("value")
+    category = data.get("category", "general")
+    if not key or not value:
+        return JSONResponse({"error": "Key and value required"}, status_code=400)
+    msg = remember(key, value, category)
+    return {"status": "success", "message": msg}
+
+@app.delete("/api/memory/{key}")
+async def api_delete_memory(key: str):
+    """Delete a memory item."""
+    msg = forget(key)
+    return {"status": "success", "message": msg}
 
 @app.post("/api/chat")
 async def chat_rest(data: dict, request: Request):

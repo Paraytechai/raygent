@@ -17,14 +17,23 @@
       <span class="brand-title">RAYGENT.AI.STUDIO <span class="version-tag" id="intel-secret-trigger" title="Raygent Pro" style="cursor:pointer;">PRO</span></span>
     </div>
     <div class="hud-actions">
+      <button id="mcp-drawer-toggle" class="mode-btn" title="Model Context Protocol Ecosystem (65 Servers)">
+        🛠️ MCPs (65)
+      </button>
+      <button id="skills-drawer-toggle" class="mode-btn" title="Specialized Domain Skills Catalog (140 Skills)">
+        ⚡ Skills (140)
+      </button>
+      <button id="memory-drawer-toggle" class="mode-btn" title="Permanent Memory & User Profile">
+        🧠 Memory
+      </button>
       <button id="avatar-drawer-toggle" class="mode-btn" title="Upload Media or Switch Avatar">
-        📁 Upload / Avatar
+        📁 Avatar
       </button>
       <button id="voice-settings-toggle" class="mode-btn voice" title="OmniVoice Voice Cloning & Neural TTS">
-        🔊 Voice Studio
+        🔊 Voice
       </button>
       <button id="mini-mode-toggle" class="mode-btn mini" title="Toggle Mini Widget Mode (Alt+M)">
-        🗖 Mini Mode
+        🗖 Mini
       </button>
       <button id="hud-minimize-btn" class="icon-btn" title="Minimize / Float Mode">🗕</button>
       <button id="hud-close-btn" class="icon-btn" title="Hide to Tray">✕</button>
@@ -73,11 +82,12 @@
 
       <!-- Quick Action Chips -->
       <div class="quick-chips">
-        <button class="chip" data-query="List all your capabilities, cloud powers, and what you can do for me.">⚡ Capabilities</button>
+        <button class="chip" data-query="List all your capabilities, cloud powers, MCP tools, skills, and memory.">⚡ Capabilities</button>
+        <button class="chip" data-query="List your active MCP servers and what each can do.">🛠️ 65 MCPs</button>
+        <button class="chip" data-query="Show me your indexed skills across Google Cloud, BigQuery, Flutter, and Reverse Engineering.">⚡ 140 Skills</button>
+        <button class="chip" data-query="What do you remember about me, my hardware, and our projects?">🧠 Memory</button>
         <button class="chip" data-query="Give me a cocky toast and tell me what you'd do without me.">🥃 Toast Me</button>
         <button class="chip" data-query="Argue with me using nothing but famous movie quotes!">⚔️ Movie Fight</button>
-        <button class="chip" data-query="Hit me with a classic movie one-liner.">🎬 Movie Line</button>
-        <button class="chip" data-query="Check today's exact date, time, and list all your active MCP tools.">🛠️ MCP Tools</button>
         <button class="chip" data-query="Write a Python script to check my system and print a roast.">🐍 Python Code</button>
       </div>
     </section>
@@ -324,10 +334,106 @@
           </div>
         </div>
       </div>
+  <!-- Model Context Protocol (MCP) Ecosystem Drawer -->
+  <div class="drawer-modal" id="mcp-drawer" style="display:none;">
+    <div class="drawer-panel mcp-panel">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>🛠️ Model Context Protocol (MCP) Hub</h3>
+          <span class="gpu-badge" style="background:#00f0ff; color:#000;">65 SERVERS CONNECTED</span>
+        </div>
+        <button id="mcp-drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="search-filter-bar">
+          <input type="text" id="mcp-search-input" class="search-input" placeholder="🔍 Search MCP servers or tools (e.g. cloudrun, firestore, playwright, comfy, rea)..." />
+          <button id="mcp-refresh-btn" class="secondary-btn" style="padding:6px 12px; font-size:12px;">🔄 Refresh</button>
+        </div>
+        <div class="category-pills" id="mcp-type-pills">
+          <button class="cat-pill active" data-type="all">All (65)</button>
+          <button class="cat-pill" data-type="Google Cloud HTTP">Google Cloud</button>
+          <button class="cat-pill" data-type="Local Stdio">Local & Stdio</button>
+          <button class="cat-pill" data-type="HTTP/SSE">Remote & SSE</button>
+        </div>
+        <div class="ecosystem-grid" id="mcp-servers-grid">
+          <!-- Populated dynamically via /api/mcp/servers -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <script src="/static/avatar.js?v=2.2"></script>
-  <script src="/static/app.js?v=2.2"></script>
+  <!-- Specialized Domain Skills Catalog Drawer -->
+  <div class="drawer-modal" id="skills-drawer" style="display:none;">
+    <div class="drawer-panel skills-panel">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>⚡ Specialized Domain Skills Catalog</h3>
+          <span class="gpu-badge" style="background:#ff007f;">140 SKILLS INDEXED</span>
+        </div>
+        <button id="skills-drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="search-filter-bar">
+          <input type="text" id="skills-search-input" class="search-input" placeholder="🔍 Search skills (e.g. bigquery, flutter, gcp, firebase, rea, devtools)..." />
+          <button id="skills-refresh-btn" class="secondary-btn" style="padding:6px 12px; font-size:12px;">🔄 Refresh</button>
+        </div>
+        <div class="category-pills" id="skills-category-pills">
+          <button class="cat-pill active" data-cat="all">All Skills</button>
+          <button class="cat-pill" data-cat="Google Cloud Infrastructure">Google Cloud</button>
+          <button class="cat-pill" data-cat="Data & BigQuery Analytics">BigQuery & Data</button>
+          <button class="cat-pill" data-cat="Flutter & Dart Engineering">Flutter & Dart</button>
+          <button class="cat-pill" data-cat="Firebase & App Development">Firebase</button>
+          <button class="cat-pill" data-cat="Reverse Engineering & Security">Reverse Eng</button>
+          <button class="cat-pill" data-cat="Browser & Web DevTools">DevTools</button>
+          <button class="cat-pill" data-cat="Biotech & Science AI">Biotech</button>
+        </div>
+        <div class="ecosystem-grid" id="skills-grid">
+          <!-- Populated dynamically via /api/skills -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ray Permanent Memory & Profile Drawer -->
+  <div class="drawer-modal" id="memory-drawer" style="display:none;">
+    <div class="drawer-panel memory-panel">
+      <div class="drawer-header">
+        <div class="voice-header-title">
+          <h3>🧠 Permanent Long-Term Memory</h3>
+          <span class="gpu-badge" style="background:#00f0ff; color:#000;">CONTEXT AUTO-INJECTED</span>
+        </div>
+        <button id="memory-drawer-close-btn" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="memory-add-card">
+          <div style="font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#00f0ff; font-weight:700;">➕ ADD NEW PERMANENT MEMORY</div>
+          <div class="memory-row">
+            <input type="text" id="memory-new-key" class="search-input" placeholder="Key (e.g. favorite_editor, project_goal)" style="flex:1;" />
+            <select id="memory-new-cat" class="memory-select">
+              <option value="general">General</option>
+              <option value="preferences">Preferences</option>
+              <option value="hardware">Hardware</option>
+              <option value="cloud">Cloud</option>
+              <option value="projects">Projects</option>
+            </select>
+          </div>
+          <div class="memory-row">
+            <input type="text" id="memory-new-val" class="search-input" placeholder="Detail or fact to lock into memory..." style="flex:1;" />
+            <button id="memory-save-btn" class="action-btn-sm" style="padding:8px 16px;">💾 Save</button>
+          </div>
+        </div>
+        <div class="search-filter-bar">
+          <input type="text" id="memory-search-input" class="search-input" placeholder="🔍 Search stored memories..." />
+          <button id="memory-refresh-btn" class="secondary-btn" style="padding:6px 12px; font-size:12px;">🔄 Refresh</button>
+        </div>
+        <div class="ecosystem-grid" id="memory-items-list">
+          <!-- Populated dynamically via /api/memory -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/avatar.js?v=2.3"></script>
+  <script src="/static/app.js?v=2.3"></script>
 </body>
 </html>

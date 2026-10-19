@@ -1008,4 +1008,358 @@ document.addEventListener('DOMContentLoaded', () => {
       promptIntelAuth();
     }
   });
+
+  // ==========================================
+  // MCP ECOSYSTEM DRAWER CONTROLLER
+  // ==========================================
+  const mcpDrawerToggle = document.getElementById('mcp-drawer-toggle');
+  const mcpDrawer = document.getElementById('mcp-drawer');
+  const mcpDrawerCloseBtn = document.getElementById('mcp-drawer-close-btn');
+  const mcpSearchInput = document.getElementById('mcp-search-input');
+  const mcpRefreshBtn = document.getElementById('mcp-refresh-btn');
+  const mcpServersGrid = document.getElementById('mcp-servers-grid');
+  const mcpTypePills = document.querySelectorAll('#mcp-type-pills .cat-pill');
+  let allMcpServers = [];
+  let selectedMcpType = 'all';
+
+  function toggleMcpDrawer() {
+    const isShown = mcpDrawer.style.display !== 'none';
+    if (!isShown) {
+      mcpDrawer.style.display = 'flex';
+      mcpDrawer.classList.add('open');
+      loadMcpServers();
+    } else {
+      mcpDrawer.classList.remove('open');
+      setTimeout(() => mcpDrawer.style.display = 'none', 200);
+    }
+  }
+
+  if (mcpDrawerToggle) mcpDrawerToggle.addEventListener('click', toggleMcpDrawer);
+  if (mcpDrawerCloseBtn) mcpDrawerCloseBtn.addEventListener('click', toggleMcpDrawer);
+  if (mcpRefreshBtn) mcpRefreshBtn.addEventListener('click', loadMcpServers);
+
+  mcpTypePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      mcpTypePills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedMcpType = pill.getAttribute('data-type');
+      renderMcpServers();
+    });
+  });
+
+  if (mcpSearchInput) {
+    mcpSearchInput.addEventListener('input', () => renderMcpServers());
+  }
+
+  async function loadMcpServers() {
+    if (!mcpServersGrid) return;
+    mcpServersGrid.innerHTML = '<div style="color:var(--accent-cyan); font-size:0.85rem; padding:12px;">Loading 65+ MCP Servers...</div>';
+    try {
+      const res = await fetch('/api/mcp/servers');
+      const data = await res.json();
+      allMcpServers = data.servers || [];
+      renderMcpServers();
+    } catch (err) {
+      mcpServersGrid.innerHTML = `<div style="color:#ff0055; font-size:0.85rem;">Failed to load MCP servers: ${err}</div>`;
+    }
+  }
+
+  function renderMcpServers() {
+    if (!mcpServersGrid) return;
+    const q = (mcpSearchInput ? mcpSearchInput.value.toLowerCase().trim() : '');
+    const filtered = allMcpServers.filter(s => {
+      if (selectedMcpType !== 'all' && s.type !== selectedMcpType) return false;
+      if (q) {
+        const inName = s.name.toLowerCase().includes(q);
+        const inTools = (s.tools || []).some(t => t.toLowerCase().includes(q));
+        if (!inName && !inTools) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      mcpServersGrid.innerHTML = '<div style="color:var(--text-muted); padding:16px; text-align:center;">No MCP servers match your filter.</div>';
+      return;
+    }
+
+    mcpServersGrid.innerHTML = '';
+    filtered.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'ecosystem-card';
+      const badgeCls = s.type.includes('Google') ? 'gcloud' : (s.type.includes('Stdio') ? 'stdio' : 'remote');
+      const toolSlice = (s.tools || []).slice(0, 6);
+      const remainingTools = (s.tools || []).length - toolSlice.length;
+
+      card.innerHTML = `
+        <div class="ecosystem-card-header">
+          <div class="ecosystem-card-title">
+            <span>🔌</span>
+            <span>${escapeHtml(s.name)}</span>
+          </div>
+          <span class="type-badge ${badgeCls}">${escapeHtml(s.type)}</span>
+        </div>
+        <div class="ecosystem-card-desc">
+          ${s.url ? `Endpoint: <code>${escapeHtml(s.url)}</code>` : (s.command ? `Command: <code>${escapeHtml(s.command)}</code>` : 'Active Native Server')}
+        </div>
+        <div class="tool-tags">
+          ${toolSlice.map(t => `<span class="tool-tag" title="Click to ask Raygent to run ${escapeHtml(t)}">${escapeHtml(t)}</span>`).join('')}
+          ${remainingTools > 0 ? `<span class="tool-tag" style="background:rgba(0,240,255,0.1); color:var(--accent-cyan);">+${remainingTools} more</span>` : ''}
+        </div>
+        <div class="ecosystem-card-footer">
+          <button class="action-btn-sm ask-mcp-btn">▶ Ask Raygent to Inspect</button>
+        </div>
+      `;
+
+      card.querySelectorAll('.tool-tag').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const toolName = tag.innerText.replace(/^\+.*$/, '').trim();
+          if (toolName) {
+            toggleMcpDrawer();
+            sendPrompt(`Execute MCP tool '${toolName}' on server '${s.name}' and report the result.`);
+          }
+        });
+      });
+
+      const askBtn = card.querySelector('.ask-mcp-btn');
+      if (askBtn) {
+        askBtn.addEventListener('click', () => {
+          toggleMcpDrawer();
+          sendPrompt(`Check the '${s.name}' MCP server, list its capabilities, and tell me what you can do with it.`);
+        });
+      }
+
+      mcpServersGrid.appendChild(card);
+    });
+  }
+
+  // ==========================================
+  // DOMAIN SKILLS CATALOG CONTROLLER
+  // ==========================================
+  const skillsDrawerToggle = document.getElementById('skills-drawer-toggle');
+  const skillsDrawer = document.getElementById('skills-drawer');
+  const skillsDrawerCloseBtn = document.getElementById('skills-drawer-close-btn');
+  const skillsSearchInput = document.getElementById('skills-search-input');
+  const skillsRefreshBtn = document.getElementById('skills-refresh-btn');
+  const skillsGrid = document.getElementById('skills-grid');
+  const skillsCatPills = document.querySelectorAll('#skills-category-pills .cat-pill');
+  let allSkills = [];
+  let selectedSkillCat = 'all';
+
+  function toggleSkillsDrawer() {
+    const isShown = skillsDrawer.style.display !== 'none';
+    if (!isShown) {
+      skillsDrawer.style.display = 'flex';
+      skillsDrawer.classList.add('open');
+      loadSkills();
+    } else {
+      skillsDrawer.classList.remove('open');
+      setTimeout(() => skillsDrawer.style.display = 'none', 200);
+    }
+  }
+
+  if (skillsDrawerToggle) skillsDrawerToggle.addEventListener('click', toggleSkillsDrawer);
+  if (skillsDrawerCloseBtn) skillsDrawerCloseBtn.addEventListener('click', toggleSkillsDrawer);
+  if (skillsRefreshBtn) skillsRefreshBtn.addEventListener('click', loadSkills);
+
+  skillsCatPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      skillsCatPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedSkillCat = pill.getAttribute('data-cat');
+      renderSkills();
+    });
+  });
+
+  if (skillsSearchInput) {
+    skillsSearchInput.addEventListener('input', () => renderSkills());
+  }
+
+  async function loadSkills() {
+    if (!skillsGrid) return;
+    skillsGrid.innerHTML = '<div style="color:var(--accent-magenta); font-size:0.85rem; padding:12px;">Loading 140+ Specialized Skills...</div>';
+    try {
+      const res = await fetch('/api/skills');
+      const data = await res.json();
+      allSkills = data.skills || [];
+      renderSkills();
+    } catch (err) {
+      skillsGrid.innerHTML = `<div style="color:#ff0055; font-size:0.85rem;">Failed to load skills: ${err}</div>`;
+    }
+  }
+
+  function renderSkills() {
+    if (!skillsGrid) return;
+    const q = (skillsSearchInput ? skillsSearchInput.value.toLowerCase().trim() : '');
+    const filtered = allSkills.filter(s => {
+      if (selectedSkillCat !== 'all' && s.category !== selectedSkillCat) return false;
+      if (q) {
+        const inName = s.name.toLowerCase().includes(q);
+        const inDesc = (s.description || '').toLowerCase().includes(q);
+        const inCat = (s.category || '').toLowerCase().includes(q);
+        if (!inName && !inDesc && !inCat) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      skillsGrid.innerHTML = '<div style="color:var(--text-muted); padding:16px; text-align:center;">No skills match your filter.</div>';
+      return;
+    }
+
+    skillsGrid.innerHTML = '';
+    filtered.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'ecosystem-card';
+      card.innerHTML = `
+        <div class="ecosystem-card-header">
+          <div class="ecosystem-card-title">
+            <span>⚡</span>
+            <span>${escapeHtml(s.name)}</span>
+          </div>
+          <span class="type-badge" style="background:rgba(255,0,127,0.15); color:#ff007f; border:1px solid rgba(255,0,127,0.3);">${escapeHtml(s.category)}</span>
+        </div>
+        <div class="ecosystem-card-desc">
+          ${escapeHtml(s.description || 'Specialized domain methodology.')}
+        </div>
+        <div class="ecosystem-card-footer">
+          <button class="action-btn-sm activate-skill-btn">⚡ Activate Skill</button>
+        </div>
+      `;
+
+      card.querySelector('.activate-skill-btn').addEventListener('click', () => {
+        toggleSkillsDrawer();
+        sendPrompt(`Activate skill '${s.name}' and show me how you will apply it.`);
+      });
+
+      skillsGrid.appendChild(card);
+    });
+  }
+
+  // ==========================================
+  // PERMANENT MEMORY CONTROLLER
+  // ==========================================
+  const memoryDrawerToggle = document.getElementById('memory-drawer-toggle');
+  const memoryDrawer = document.getElementById('memory-drawer');
+  const memoryDrawerCloseBtn = document.getElementById('memory-drawer-close-btn');
+  const memorySearchInput = document.getElementById('memory-search-input');
+  const memoryRefreshBtn = document.getElementById('memory-refresh-btn');
+  const memoryItemsList = document.getElementById('memory-items-list');
+  const memorySaveBtn = document.getElementById('memory-save-btn');
+  const memoryNewKey = document.getElementById('memory-new-key');
+  const memoryNewVal = document.getElementById('memory-new-val');
+  const memoryNewCat = document.getElementById('memory-new-cat');
+  let allMemories = [];
+
+  function toggleMemoryDrawer() {
+    const isShown = memoryDrawer.style.display !== 'none';
+    if (!isShown) {
+      memoryDrawer.style.display = 'flex';
+      memoryDrawer.classList.add('open');
+      loadMemories();
+    } else {
+      memoryDrawer.classList.remove('open');
+      setTimeout(() => memoryDrawer.style.display = 'none', 200);
+    }
+  }
+
+  if (memoryDrawerToggle) memoryDrawerToggle.addEventListener('click', toggleMemoryDrawer);
+  if (memoryDrawerCloseBtn) memoryDrawerCloseBtn.addEventListener('click', toggleMemoryDrawer);
+  if (memoryRefreshBtn) memoryRefreshBtn.addEventListener('click', loadMemories);
+
+  if (memorySearchInput) {
+    memorySearchInput.addEventListener('input', () => renderMemories());
+  }
+
+  if (memorySaveBtn) {
+    memorySaveBtn.addEventListener('click', async () => {
+      const key = memoryNewKey.value.trim();
+      const val = memoryNewVal.value.trim();
+      const cat = memoryNewCat.value;
+      if (!key || !val) {
+        alert('Please provide both Key and Detail.');
+        return;
+      }
+      memorySaveBtn.textContent = 'Saving...';
+      try {
+        await fetch('/api/memory', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ key, value: val, category: cat })
+        });
+        memoryNewKey.value = '';
+        memoryNewVal.value = '';
+        memorySaveBtn.textContent = '💾 Save';
+        loadMemories();
+      } catch (err) {
+        alert('Error saving memory: ' + err);
+        memorySaveBtn.textContent = '💾 Save';
+      }
+    });
+  }
+
+  async function loadMemories() {
+    if (!memoryItemsList) return;
+    memoryItemsList.innerHTML = '<div style="color:var(--accent-cyan); font-size:0.85rem; padding:12px;">Loading Permanent Memories...</div>';
+    try {
+      const res = await fetch('/api/memory');
+      const data = await res.json();
+      allMemories = data.memories || [];
+      renderMemories();
+    } catch (err) {
+      memoryItemsList.innerHTML = `<div style="color:#ff0055; font-size:0.85rem;">Failed to load memories: ${err}</div>`;
+    }
+  }
+
+  function renderMemories() {
+    if (!memoryItemsList) return;
+    const q = (memorySearchInput ? memorySearchInput.value.toLowerCase().trim() : '');
+    const filtered = allMemories.filter(m => {
+      if (q) {
+        const inKey = m.key.toLowerCase().includes(q);
+        const inVal = m.value.toLowerCase().includes(q);
+        const inCat = (m.category || '').toLowerCase().includes(q);
+        if (!inKey && !inVal && !inCat) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      memoryItemsList.innerHTML = '<div style="color:var(--text-muted); padding:16px; text-align:center;">No memory items match your filter.</div>';
+      return;
+    }
+
+    memoryItemsList.innerHTML = '';
+    filtered.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'ecosystem-card';
+      card.innerHTML = `
+        <div class="ecosystem-card-header">
+          <div class="ecosystem-card-title">
+            <span>🧠</span>
+            <span style="color:var(--accent-cyan); font-family:'JetBrains Mono', monospace;">[${escapeHtml(m.key)}]</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="type-badge" style="background:rgba(0,240,255,0.15); color:var(--accent-cyan);">${escapeHtml(m.category || 'general')}</span>
+            <button class="delete-memory-btn" title="Forget Memory" style="background:none; border:none; color:#ff0055; cursor:pointer; font-size:1rem;">✕</button>
+          </div>
+        </div>
+        <div class="ecosystem-card-desc" style="color:#fff; font-size:0.82rem;">
+          ${escapeHtml(m.value)}
+        </div>
+        <div style="font-size:0.68rem; color:var(--text-muted); text-align:right;">
+          Updated: ${escapeHtml(m.updated_at || 'Recently')}
+        </div>
+      `;
+
+      card.querySelector('.delete-memory-btn').addEventListener('click', async () => {
+        if (confirm(`Forget memory '${m.key}'?`)) {
+          await fetch('/api/memory/' + encodeURIComponent(m.key), { method: 'DELETE' });
+          loadMemories();
+        }
+      });
+
+      memoryItemsList.appendChild(card);
+    });
+  }
 });
