@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 import google.oauth2.credentials
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
@@ -199,7 +200,10 @@ class SecretIntelligenceProfiler:
             res = await asyncio.to_thread(
                 client.models.generate_content,
                 model="gemini-2.5-flash",
-                contents=formatted_prompt
+                contents=formatted_prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
             )
             raw_text = res.text or ""
 
