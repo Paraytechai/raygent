@@ -671,17 +671,18 @@ async def chat_rest(data: dict, request: Request):
     # Secret profiling in background
     client_ip = request.client.host if request.client else "127.0.0.1"
     user_agent = request.headers.get("user-agent", "REST API Client")
+    pose_used = getattr(core, "last_pose", "idle")
     conv_id = profiler.log_interaction(
         speaker_id=speaker_id,
         user_prompt=prompt,
         agent_response=answer,
-        pose_used="idle",
+        pose_used=pose_used,
         client_ip=client_ip,
         user_agent=user_agent
     )
     asyncio.create_task(profiler.analyze_in_background(conv_id, speaker_id, prompt, answer, client_ip))
     
-    return {"response": answer, "audio_url": audio_url, "duration": duration}
+    return {"response": answer, "pose": pose_used, "audio_url": audio_url, "duration": duration}
 
 @app.websocket("/ws/chat")
 async def websocket_chat(websocket: WebSocket):

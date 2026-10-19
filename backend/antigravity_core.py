@@ -200,8 +200,28 @@ class RaygentCore:
             yield {"type": "error", "content": str(e)}
 
     async def single_turn(self, user_message: str) -> str:
-        parts = []
-        async for chunk in self.stream_chat(user_message):
-            if chunk.get("type") == "token":
-                parts.append(chunk["content"])
-        return "".join(parts)
+        try:
+            client = self._get_client()
+            system_inst = self._get_system_instruction()
+            chat = client.chats.create(
+                model="gemini-2.5-flash",
+                config=types.GenerateContentConfig(
+                    system_instruction=system_inst,
+                    tools=RAYGENT_TOOLS
+                )
+            )
+            response = await asyncio.to_thread(chat.send_message, user_message)
+            raw_text = response.text or ""
+            pose_pattern = re.compile(r"\[POSE:(\w+)\]", re.IGNORECASE)
+            match = pose_pattern.search(raw_text)
+            self.last_pose = match.group(1).lower() if match else "idle"
+            clean_text = pose_pattern.sub("", raw_text).strip()
+            return clean_text
+        except Exception as e:
+            print(f"[RaygentCore single_turn Error]: {e}")
+            # Fallback to streaming aggregation if send_message hits an issue
+            parts = []
+            async for chunk in self.stream_chat(user_message):
+                if chunk.get("type") == "token":
+                    parts.append(chunk["content"])
+            return "".join(parts)
