@@ -200,6 +200,7 @@ class OmniVoiceEngine:
     def _synthesize_sync(self, text: str, instruct: Optional[str] = None) -> Tuple[str, float]:
         clean_text = re.sub(r'\[POSE:[^\]]+\]', '', text)
         clean_text = re.sub(r'```.*?```', '', clean_text, flags=re.DOTALL)
+        clean_text = re.sub(r'🛠️[^\n]*', '', clean_text)
         clean_text = re.sub(r'[*_#`~]', '', clean_text)
         clean_text = clean_text.strip()
         

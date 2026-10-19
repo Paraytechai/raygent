@@ -177,14 +177,14 @@ async def broadcast_websocket(event: dict):
 
 def get_comfy_port() -> int:
     import urllib.request
-    for port in [8189, 8188]:
+    for port in [8188, 8189]:
         try:
-            with urllib.request.urlopen(f"http://127.0.0.1:{port}/system_stats", timeout=0.5) as r:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/system_stats", timeout=0.8) as r:
                 if r.status == 200:
                     return port
         except Exception:
             pass
-    return 8189
+    return 8188
 
 async def generate_comfy_avatar(prompt: str) -> Optional[dict]:
     import time
@@ -266,7 +266,7 @@ async def generate_comfy_avatar(prompt: str) -> Optional[dict]:
             return None
 
         # Poll for completion
-        for _ in range(40):
+        for _ in range(80):
             await asyncio.sleep(0.3)
             try:
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{prompt_id}", timeout=2) as h_resp:

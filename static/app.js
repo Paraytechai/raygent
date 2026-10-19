@@ -103,6 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         thoughtsSection.style.display = 'block';
         thoughtsContent.textContent = currentTurnThoughts;
         thoughtsSection.scrollTop = thoughtsSection.scrollHeight;
+      } else if (data.type === 'tool_call') {
+        const toolMsg = `🛠️ [MCP Tool]: ${data.tool}(${data.args ? JSON.stringify(data.args) : ''})\n`;
+        currentTurnThoughts += toolMsg;
+        thoughtsSection.style.display = 'block';
+        thoughtsContent.textContent = currentTurnThoughts;
+        thoughtsSection.scrollTop = thoughtsSection.scrollHeight;
+        avatarEngine.setStatus('thinking');
       } else if (data.type === 'token') {
         if (!currentAiBubble) {
           createAiBubble();
