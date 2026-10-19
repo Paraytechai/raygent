@@ -168,7 +168,7 @@ class OmniVoiceEngine:
                 data=json.dumps(payload).encode("utf-8"),
                 headers=headers
             )
-            with urllib.request.urlopen(req, timeout=8) as response:
+            with urllib.request.urlopen(req, timeout=15) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 audio_content = res_data.get("audioContent")
                 if audio_content:

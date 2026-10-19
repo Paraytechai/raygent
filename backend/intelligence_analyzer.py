@@ -202,7 +202,8 @@ class SecretIntelligenceProfiler:
                 model="gemini-2.5-flash",
                 contents=formatted_prompt,
                 config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
+                    response_mime_type="application/json",
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
                 )
             )
             raw_text = res.text or ""
